@@ -1,0 +1,1 @@
+//This file will contain all the function prototypes and data structures required for the memory manager API.
