@@ -7,10 +7,18 @@ memory_manager *createMemoryManager(int size) {
 
     // Initialize the memory map
     linkedlist *LL = (linkedlist*) malloc(sizeof(linkedlist));
+    LL->head = NULL;
+    LL->count = 0;
     linkedlist *FL = (linkedlist*) malloc(sizeof(linkedlist));
+    FL->head = NULL;
+    FL->count = 0;
     linkedlist *BL = (linkedlist*) malloc(sizeof(linkedlist));
+    BL->head = NULL;
+    BL->count = 0;
+
     addToStart(LL, size);
-    addToStart(LL, size);
+    addToStart(FL, size);
+    
     mem_manager->memory_map = LL;
     mem_manager->free_list = FL;
     mem_manager->busy_list = BL;
@@ -62,7 +70,9 @@ memory_manager *allocateMemory(memory_manager *mm, int size) {
 void dumpMemoryLists(memory_manager *mm) {
     linkedlist *bl = mm->busy_list;
     linkedlist *fl = mm->free_list;
+    printf("Busy List ");
     printList(bl);
+    printf("Free List ");
     printList(fl);
 }
 

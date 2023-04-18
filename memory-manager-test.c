@@ -4,8 +4,10 @@
 int main() {
     // Test createMemoryManager function
     memory_manager *mm = createMemoryManager(100);
-    assert(mm->memory_map->count == 2);
-    assert(mm->free_list->count == 0);
+    //should only be the initial node with a value of 100 for 100 free space
+    assert(mm->memory_map->count == 1);
+    assert(mm->free_list->count == 1);
+    //should not be anything in the busy list
     assert(mm->busy_list->count == 0);
 
     // Test allocateMemory function

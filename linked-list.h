@@ -29,5 +29,5 @@ void insertAfter(linkedlist*, node**, int);
 void removeNode(linkedlist*, node**);
 node *unlinkNode(linkedlist*, int);
 int count(linkedlist*);
-void destroyList(linkedlist*)
+void destroyList(linkedlist*);
 #endif
