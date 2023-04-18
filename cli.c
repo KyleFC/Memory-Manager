@@ -1,1 +1,1 @@
-//implement cli functions
+//implement cli (command line interface) functions
