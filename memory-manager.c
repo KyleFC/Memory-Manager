@@ -8,12 +8,15 @@ memory_manager *createMemoryManager(int size) {
     // Initialize the memory map
     linkedlist *LL = (linkedlist*) malloc(sizeof(linkedlist));
     LL->head = NULL;
+    LL->tail = NULL;
     LL->count = 0;
     linkedlist *FL = (linkedlist*) malloc(sizeof(linkedlist));
     FL->head = NULL;
+    FL->tail = NULL;
     FL->count = 0;
     linkedlist *BL = (linkedlist*) malloc(sizeof(linkedlist));
     BL->head = NULL;
+    BL->tail = NULL;
     BL->count = 0;
 
     addToStart(LL, size);
@@ -26,11 +29,13 @@ memory_manager *createMemoryManager(int size) {
     return mem_manager;
 }
 
-memory_manager *allocateMemory(memory_manager *mm, int size) {
+int allocateMemory(memory_manager *mm, int size) {
     linkedlist *FL = mm->free_list;
     node *prev = NULL;
     node *curr = FL->head;
 
+    //for all of the nodes "data" is technically the size of the block
+    //traverse through the linkedlist of free blocks until it finds one that is big enough to fit "size"
     while (curr != NULL && curr->data < size) {
         prev = curr;
         curr = curr->next;
@@ -38,20 +43,21 @@ memory_manager *allocateMemory(memory_manager *mm, int size) {
 
     if (curr == NULL) {
         // Could not find a suitable block in free list
-        return NULL;
+        return -1;
     }
 
     // Found a suitable block in free list
     if (curr->data > size) {
         // Split the node if it has more space than needed
+        // new node is the second half
         node *new_node = malloc(sizeof(node));
         new_node->data = curr->data - size;
+        new_node->address = curr->address + size;
         new_node->next = NULL;
         new_node->prev = curr;
         curr->data = size;
         curr->next = new_node;
     }
-
     // Remove the allocated block from the free list
     if (prev == NULL) {
         FL->head = curr->next;
@@ -60,11 +66,16 @@ memory_manager *allocateMemory(memory_manager *mm, int size) {
     }
 
     // Add the allocated block to the busy list
+    int address = curr->address;
     linkedlist *BL = mm->busy_list;
-    addToStart(BL, curr->data);
+    addToEnd(BL, size);
 
     // Return a pointer to the allocated block
-    return (memory_manager *) curr;
+    return address;
+}
+
+void freeMemory(memory_manager *mm, int address) {
+
 }
 
 void dumpMemoryLists(memory_manager *mm) {
@@ -83,4 +94,7 @@ void destroyMemoryManager(memory_manager *mm) {
     destroyList(map);
     destroyList(fl);
     destroyList(bl);
+    mm->memory_map = NULL;
+    mm->free_list = NULL;
+    mm->busy_list = NULL;
 }

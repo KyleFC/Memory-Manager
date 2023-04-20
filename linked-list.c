@@ -37,10 +37,10 @@ void addToEnd(linkedlist *list, int data)
     //(node*) is a typecast so that this void pointer turns into a node pointer
     new->data = data;
     new->prev = temp->tail;
+    new->address = 0;
     new->next = NULL;
     //assign data to the variables within the new node
     temp->count += 1;
-
     if (temp->tail == NULL)
     {
         temp->head = new;
@@ -76,6 +76,7 @@ void addToStart(linkedlist *list, int data)
     //make a pointer called new. It will hold the address of the new memory location we reserved
     //(node*) is a typecast so that this void pointer turns into a node pointer
     new->data = data;
+    new->address = 0;
     new->prev = NULL;
     new->next = temp->head;
     //assign data to the variables within the new node
@@ -84,6 +85,7 @@ void addToStart(linkedlist *list, int data)
     if (temp->head == NULL)
     {
          temp->head = new;
+         temp->tail = new;
         //if there isn't a head in the linked list yet
         //then make one and end the function
         return;
@@ -273,18 +275,19 @@ node* unlinkNode(linkedlist *list, int n)
 
 
 
-void destroyList(linkedlist *list)
+void destroyList(linkedlist *list) {
 /*
  * @brief: This function destroys the linked list
  * @param: data - the linked list
  */
-{
-    linkedlist *temp = list;
-    while (temp->head != NULL)
-    {
-        removeLast(temp);
+    node *curr = list->head;
+    while (curr != NULL) {
+        node *temp = curr;
+        curr = curr->next;
+        free(temp);
     }
-    temp->count = 0;
+    list->head = NULL;
+    list->count = 0;
 }
 
 //------------- Sorting---------------

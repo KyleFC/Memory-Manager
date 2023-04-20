@@ -7,6 +7,7 @@
 typedef struct node 
 {
     int data;
+    int address;
     struct node *next;
     struct node *prev;
 } node;
