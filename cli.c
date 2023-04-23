@@ -76,11 +76,12 @@ void parseCommand(char *command, memory_manager *mm) {
             return;
         }
 
-        void *address = allocateMemory(mm, size);
-        if (address == NULL) {
+        int address = allocateMemory(mm, size);
+        if (address == -1) {
             printf("Failed to allocate %d bytes\n", size);
         } else {
-            printf("Allocated %d bytes at address %p\n", size, address);
+            //%p for hex so it looks like real memory addresses.
+            printf("Allocated %d bytes at address %i\n", size, address);
         }
     } else if (strcmp(token, "free") == 0) {
         token = strtok(NULL, " ");
@@ -89,9 +90,9 @@ void parseCommand(char *command, memory_manager *mm) {
             return;
         }
 
-        void *address = (void*) strtoull(token, NULL, 16);
-        freeMemory(mm, address);
-        printf("Freed memory at address %p\n", address);
+        //void *address = (void*) strtoull(token, NULL, 16);
+        //freeMemory(mm, address);
+        //printf("Freed memory at address %p\n", address);
     } else if (strcmp(token, "list") == 0 || strcmp(token, "view") == 0) {
         printMemoryMap(mm);
     } else {

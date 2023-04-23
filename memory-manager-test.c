@@ -35,6 +35,12 @@ int main() {
     // Test dumpMemoryLists function
     dumpMemoryLists(mm); // just to check output manually
 
+    // Test freeMemory function
+    int address_to_free = allocated_block;
+    freeMemory(mm, address_to_free);
+    dumpMemoryLists(mm);
+
+    printf("freeMemory passed!\n");
     // Test destroyMemoryManager function
     destroyMemoryManager(mm);
     printf("destroying memory manager...");

@@ -75,7 +75,71 @@ int allocateMemory(memory_manager *mm, int size) {
 }
 
 void freeMemory(memory_manager *mm, int address) {
+    // currently implements its own findNode function. 
+    // Could be worth creating a findNode function specifically for addresses later.
+    linkedlist *FL = mm->free_list;
+    linkedlist *BL = mm->busy_list;
 
+    // Find the node in the busy list with the given address
+    node *prev = NULL;
+    node *curr = BL->head;
+    while (curr != NULL && curr->address != address) {
+        prev = curr;
+        curr = curr->next;
+    }
+
+    if (curr == NULL) {
+        // Could not find the block in the busy list
+        return;
+    }
+
+    // Remove the node from the busy list
+    if (prev == NULL) {
+        BL->head = curr->next;
+    } else {
+        prev->next = curr->next;
+    }
+    // so at this point the node has been removed from the busy list
+    // now we use the address of this node (curr) and find where it's supposed to be in the free list
+    // the node should also be coalesced with adjacent free blocks
+    address = curr->address;
+    curr = FL->head;
+    while (curr != NULL && curr->address < address) {
+        prev = curr;
+        curr = curr->next;
+    }
+
+    // Coalesce with adjacent free blocks if possible
+    // this way will coalesce as we add the node in, but it's more confusing to look at
+    // it could be worth it to make a less efficient coalescing function that would go over the entire list and coalesce.
+    if (prev != NULL && prev->address + prev->data == address) {
+        prev->data += curr->data;
+        if (curr->next != NULL && address + curr->data == curr->next->address) {
+            prev->data += curr->next->data;
+            prev->next = curr->next->next;
+            free(curr->next);
+        } else {
+            free(curr);
+        }
+    } else if (curr->next != NULL && address + curr->data == curr->next->address) {
+        curr->data += curr->next->data;
+        curr->address = address;
+        curr->next = curr->next->next;
+        free(curr->next);
+        if (prev == NULL) {
+            FL->head = curr;
+        } else {
+            prev->next = curr;
+        }
+    } else {
+        curr->address = address;
+        if (prev == NULL) {
+            FL->head = curr;
+        } else {
+            prev->next = curr;
+        }
+        curr->prev = prev;
+    }
 }
 
 void dumpMemoryLists(memory_manager *mm) {
@@ -85,6 +149,7 @@ void dumpMemoryLists(memory_manager *mm) {
     printList(bl);
     printf("Free List ");
     printList(fl);
+    printf("\n");
 }
 
 void destroyMemoryManager(memory_manager *mm) {
