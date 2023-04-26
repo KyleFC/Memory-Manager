@@ -74,6 +74,43 @@ int allocateMemory(memory_manager *mm, int size) {
     return address;
 }
 
+void freeMemory(memory_manager *mm, int address) {
+    linkedlist *BL = mm->busy_list;
+    node *prev = NULL;
+    node *curr = BL->head;
+
+    //traverse through the linkedlist of busy blocks, incremending an address counter, until it finds the requested node ("block")
+    int currAddress = 0;
+    while (curr != NULL && currAddress < address)
+    {
+        currAddress += curr->data;
+        prev = curr;
+        curr = curr->next;
+    }
+
+    if (currAddress != address)
+    {
+        //if the address is not the beginning of a busy block (i.e., the requested address is not an independent block), or the block could not be found
+        printf("Error: Could not free memory block at address %i\n", address);
+        return;
+    }
+
+    int size = curr->data;
+    //remove current node from busy list
+    if (curr->next == NULL)
+    {
+        prev->next = NULL;
+    }
+    else
+    {
+        prev->next = curr->next;
+        prev->next->prev = prev;
+    }
+
+    linkedlist *FL = mm->free_list;
+    addToEnd(FL, size);
+}
+
 void dumpMemoryLists(memory_manager *mm) {
     linkedlist *bl = mm->busy_list;
     linkedlist *fl = mm->free_list;
