@@ -106,7 +106,7 @@ void printList(linkedlist *list)
     printf("%d items: ", list->count);
     while (curr != NULL)
     {
-        printf("%d ", curr->data);
+        printf("size:%d address:%d", curr->data, curr->address);
         curr = curr->next;
     }
     printf("\n");
@@ -266,22 +266,29 @@ node* unlinkNode(linkedlist *list, int n)
     {
         temp->head = tempnode->next;
     }
-    else if (tempnode == temp->tail)
+    if (tempnode == temp->tail)
     {
         temp->tail = tempnode->prev;
     }
+
+    if (tempnode->prev != NULL)
+    {
+        tempnode->prev->next = tempnode->next;
+    }
     else
     {
-        if (tempnode->prev != NULL)
-        {
-            tempnode->prev->next = tempnode->next;
-        }
-
-        if (tempnode->next != NULL)
-        {
-            tempnode->next->prev = tempnode->prev;
-        }
+        tempnode->next->prev = NULL;
     }
+
+    if (tempnode->next != NULL)
+    {
+        tempnode->next->prev = tempnode->prev;
+    }
+    else
+    {
+        tempnode->prev->next = NULL;
+    }
+
 
     if (tempnode->prev != NULL || tempnode->next != NULL)
     {
@@ -373,10 +380,12 @@ void selectionSortBlocks(linkedlist *list)
             }
             temp = temp->next;
         }
-
+        int tempData = curr->data;
         int tempAddress = curr->address;
         curr->address = min->address;
+        curr->data = min->data;
         min->address = tempAddress;
+        min->data = tempData;
         curr = curr->next;
     }
 }

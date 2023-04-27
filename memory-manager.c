@@ -78,7 +78,7 @@ void freeMemory(memory_manager *mm, int address) {
     linkedlist *BL = mm->busy_list;
     linkedlist *FL = mm->free_list;
     node *freed_node = unlinkNode(BL, address);
-
+    //printf("%i", freed_node->address);
     addToEnd(FL, freed_node->data, freed_node->address);
     selectionSortBlocks(FL);
     coalesceList(FL);
@@ -92,14 +92,14 @@ void coalesceList(linkedlist *LL) {
         node *next = curr->next;
         // Find start of next block
         int next_start = next->address;
-
+        //printf("%d, %d", curr_end, next_start);
         if (curr_end == next_start) {
             // Merge the two blocks into a single block
+            printf("Found match");
             curr->data += next->data;
             unlinkNode(LL, next->address);
-            free(next);
         } else {
-            curr = curr->next;
+            curr->next = NULL;
         }
     }
 }

@@ -1,9 +1,6 @@
 #include "memory-manager.h"
 #include <assert.h>
 
-#include "memory-manager.c"
-#include "linked-list.c"
-
 int main() {
     // Test createMemoryManager function
     memory_manager *mm = createMemoryManager(1000);
