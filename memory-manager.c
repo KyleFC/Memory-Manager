@@ -95,11 +95,15 @@ void coalesceList(linkedlist *LL) {
         //printf("%d, %d", curr_end, next_start);
         if (curr_end == next_start) {
             // Merge the two blocks into a single block
-            printf("Found match");
+            //printf("Found match");
             curr->data += next->data;
             unlinkNode(LL, next->address);
-        } else {
+        } 
+        else if (LL->tail == curr) {
             curr->next = NULL;
+        }
+        else {
+            curr = curr->next;
         }
     }
 }

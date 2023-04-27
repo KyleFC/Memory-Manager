@@ -32,8 +32,8 @@ int main() {
 
     // Test freeMemory function
     int address_to_free = allocated_block;
-    printf("%i\n", address_to_free);
-    freeMemory(mm, address_to_free);
+    //printf("%i\n", address_to_free);
+    freeMemory(mm, 100);
     dumpMemoryLists(mm);
 
     printf("freeMemory passed!\n");
