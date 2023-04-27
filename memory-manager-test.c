@@ -1,6 +1,9 @@
 #include "memory-manager.h"
 #include <assert.h>
 
+#include "memory-manager.c"
+#include "linked-list.c"
+
 int main() {
     // Test createMemoryManager function
     memory_manager *mm = createMemoryManager(1000);
@@ -32,6 +35,7 @@ int main() {
 
     // Test freeMemory function
     int address_to_free = allocated_block;
+    printf("%i\n", address_to_free);
     freeMemory(mm, address_to_free);
     dumpMemoryLists(mm);
 

@@ -12,6 +12,7 @@ typedef struct memory_manager {
 
 memory_manager *createMemoryManager(int);
 int allocateMemory(memory_manager*, int);
+void freeMemory(memory_manager*, int);
 void dumpMemoryLists(memory_manager*);
 void destroyMemoryManager(memory_manager*);
 void freeMemory(memory_manager*, int);
