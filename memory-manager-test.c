@@ -27,11 +27,6 @@ int main() {
     node *head = FL->head;
     printf("allocated more memory...\n");
 
-    while(head != NULL) {
-        printf("%i ", head->address);
-        head = head->next;
-    }
-
     // Test dumpMemoryLists function
     dumpMemoryLists(mm); // just to check output manually
 

@@ -24,7 +24,7 @@ int count(linkedlist *list)
     return total;
 }
 
-void addToEnd(linkedlist *list, int data)
+void addToEnd(linkedlist *list, int data, int address)
 /*
  * @brief: This function creates a new node to the end of the linked list
  * @param: data - the data to be stored in the node
@@ -37,7 +37,7 @@ void addToEnd(linkedlist *list, int data)
     //(node*) is a typecast so that this void pointer turns into a node pointer
     new->data = data;
     new->prev = temp->tail;
-    new->address = 0;
+    new->address = address;
     new->next = NULL;
     //assign data to the variables within the new node
     temp->count += 1;
@@ -163,8 +163,8 @@ node *removeFirst(linkedlist *list)
 node *findNode(linkedlist *list, int n)
 /*
  * @brief: This function finds the node at the given index n
- * @param: data - the linked list
- * @param: index - the index of the node, n
+ * @param: list - the linked list
+ * @param: n - the index of the node, n
  * @return: the index n node
  */
 {
@@ -181,6 +181,26 @@ node *findNode(linkedlist *list, int n)
     return NULL;
 }
 
+node *findBlock(linkedlist *list, int n)
+/*
+ * @brief: This function finds the node at the given index n
+ * @param: list - the linked list
+ * @param: n - the index of the node, n
+ * @return: the index n node
+ */
+{
+    node *curr = list->head;
+    while (curr != NULL)
+    {
+        if (curr->address == n)
+        {
+            return curr;
+        }
+        curr = curr->next;
+    }
+    printf("COULD NOT FIND NODE WITH VALUE %d\n", n);
+    return NULL;
+}
 
 
 void insertBefore(linkedlist *list, node **target, int data)
@@ -240,7 +260,7 @@ node* unlinkNode(linkedlist *list, int n)
  */
 {
     linkedlist *temp = list;
-    node *tempnode = findNode(temp, n);
+    node *tempnode = findBlock(temp, n);
 
     if (tempnode == temp->head)
     {
@@ -270,6 +290,7 @@ node* unlinkNode(linkedlist *list, int n)
 
     tempnode->prev = NULL;
     tempnode->next = NULL;
+
     return tempnode;
 }
 
@@ -324,5 +345,38 @@ void selectionSort(linkedlist *list)
         curr = curr->next;
         //we set curr's value to min and then make the next
         //node the starting node
+    }
+}
+
+void selectionSortBlocks(linkedlist *list)
+/*
+ * @brief: This function sorts the linked list
+ *
+ * Selection sort aims to sort the list by putting thr smallest value at the front
+ * and repeating the process until the list is sorted. Its an O(n^2) algorithm
+ *
+ * @param: linked list
+ */
+{
+    
+    node *curr = list->head;
+    while (curr->next != NULL)
+    {
+        //go through all values to find the minimum
+        node *min = curr;
+        node *temp = curr->next;
+        while (temp != NULL)
+        {
+            if (temp->address < min->address)
+            {
+                min = temp;
+            }
+            temp = temp->next;
+        }
+
+        int tempAddress = curr->address;
+        curr->address = min->address;
+        min->address = tempAddress;
+        curr = curr->next;
     }
 }

@@ -68,10 +68,40 @@ int allocateMemory(memory_manager *mm, int size) {
     // Add the allocated block to the busy list
     int address = curr->address;
     linkedlist *BL = mm->busy_list;
-    addToEnd(BL, size);
+    addToEnd(BL, size, address);
 
-    // Return a pointer to the allocated block
+    // Return the address
     return address;
+}
+
+void freeMemory(memory_manager *mm, int address) {
+    linkedlist *BL = mm->busy_list;
+    linkedlist *FL = mm->free_list;
+    node *freed_node = unlinkNode(BL, address);
+
+    addToEnd(FL, freed_node->data, freed_node->address);
+    selectionSortBlocks(FL);
+    coalesceList(FL);
+}
+
+void coalesceList(linkedlist *LL) {
+    node *curr = LL->head;
+    while (curr && curr->next) {
+        // Find end of current block
+        int curr_end = curr->address + curr->data;
+        node *next = curr->next;
+        // Find start of next block
+        int next_start = next->address;
+
+        if (curr_end == next_start) {
+            // Merge the two blocks into a single block
+            curr->data += next->data;
+            unlinkNode(LL, next->address);
+            free(next);
+        } else {
+            curr = curr->next;
+        }
+    }
 }
 
 void dumpMemoryLists(memory_manager *mm) {
