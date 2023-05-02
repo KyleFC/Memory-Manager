@@ -5,4 +5,4 @@
 
 void printUsage();
 void printMemoryMap(memory_manager *mm);
-void parseCommand(char *command, memory_manager *mm);
+void parseCommand(char *command, int fit, memory_manager *mm);
