@@ -12,17 +12,17 @@ int main() {
     printf("Memory Map creation passed!\n");
 
     // Test allocateMemory function
-    int allocated_block = allocateMemory(mm, 50);
+    int allocated_block = allocateMemory(mm, 50, 0);
     assert(mm->free_list->count == 1);
     assert(mm->busy_list->count == 1);
     assert(allocated_block != -1);
     printf("allocateBlock passed!\n");
 
     // Allocating a few more blocks
-    allocated_block = allocateMemory(mm, 50);
-    allocated_block = allocateMemory(mm, 30);
-    allocated_block = allocateMemory(mm, 50);
-    allocated_block = allocateMemory(mm, 10);
+    allocated_block = allocateMemory(mm, 50, 0);
+    allocated_block = allocateMemory(mm, 30, 0);
+    allocated_block = allocateMemory(mm, 50, 0);
+    allocated_block = allocateMemory(mm, 10, 0);
     linkedlist *FL = mm->free_list;
     node *head = FL->head;
     printf("allocated more memory...\n");
@@ -39,11 +39,31 @@ int main() {
     printf("freeMemory passed!\n");
     // Test destroyMemoryManager function
     destroyMemoryManager(mm);
-    printf("destroying memory manager...");
+    printf("destroying memory manager for first-fit");
     assert(mm->memory_map == NULL);
     assert(mm->free_list == NULL);
     assert(mm->busy_list == NULL);
 
+    memory_manager *mm2 = createMemoryManager(100);
+    allocated_block = allocateMemory(mm, 10, 1);
+    allocated_block = allocateMemory(mm, 20, 1);
+    allocated_block = allocateMemory(mm, 30, 1);
+    allocated_block = allocateMemory(mm, 30, 1);
+    
+    //FL size 10 address 0, BL s10 a0, s20 a10, s30 a30, s30 a60
+    dumpMemoryLists(mm2);
+    freeMemory(mm2, 10);
+    freeMemory(mm2, 30);
+    dumpMemoryLists(mm2);
+
+    int address = allocateMemory(mm2, 10, 1);
+    //should be 10 : 90
+    printf("%i", address);
+
+    address = allocateMemory(mm2, 30, 1);
+    //should be 30 : 10
+    printf("%i", address);
+    dumpMemoryLists(mm2);
     return 0;
 }
 

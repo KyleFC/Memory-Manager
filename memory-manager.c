@@ -29,16 +29,38 @@ memory_manager *createMemoryManager(int size) {
     return mem_manager;
 }
 
-int allocateMemory(memory_manager *mm, int size) {
+node  *findBestBlock(linkedlist *LL, int size) {
+    node *best_fit = NULL;
+    int min = __INT_MAX__;
+    node *curr = LL->head;
+    node *prev = NULL;
+
+    while (curr != NULL) {
+        if (curr->data >= size) {
+            best_fit = curr;
+            min = curr->data - size;
+        }
+        prev = curr;
+        curr = curr->next;
+    } 
+    return best_fit;
+}
+
+int allocateMemory(memory_manager *mm, int size, int mode) {
     linkedlist *FL = mm->free_list;
     node *prev = NULL;
     node *curr = FL->head;
 
     //for all of the nodes "data" is technically the size of the block
     //traverse through the linkedlist of free blocks until it finds one that is big enough to fit "size"
-    while (curr != NULL && curr->data < size) {
-        prev = curr;
-        curr = curr->next;
+    if (mode == 0) {
+        while (curr != NULL && curr->data < size) {
+            prev = curr;
+            curr = curr->next;
+        }
+    }
+    else {
+        node *curr = findBestBlock(FL, size);
     }
 
     if (curr == NULL) {
@@ -47,7 +69,7 @@ int allocateMemory(memory_manager *mm, int size) {
     }
 
     // Found a suitable block in free list
-    if (curr->data > size) {
+    if (curr->data >= size) {
         // Split the node if it has more space than needed
         // new node is the second half
         node *new_node = malloc(sizeof(node));
