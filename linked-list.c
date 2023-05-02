@@ -106,7 +106,7 @@ void printList(linkedlist *list)
     printf("%d items: ", list->count);
     while (curr != NULL)
     {
-        printf("size:%d address:%d ", curr->data, curr->address);
+        printf("ad=%d:sz=%d ", curr->address, curr->data);
         curr = curr->next;
     }
     printf("\n");

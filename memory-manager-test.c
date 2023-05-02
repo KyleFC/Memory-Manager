@@ -39,16 +39,16 @@ int main() {
     printf("freeMemory passed!\n");
     // Test destroyMemoryManager function
     destroyMemoryManager(mm);
-    printf("destroying memory manager for first-fit");
+    printf("destroying memory manager for first-fit\n");
     assert(mm->memory_map == NULL);
     assert(mm->free_list == NULL);
     assert(mm->busy_list == NULL);
 
     memory_manager *mm2 = createMemoryManager(100);
-    allocated_block = allocateMemory(mm, 10, 1);
-    allocated_block = allocateMemory(mm, 20, 1);
-    allocated_block = allocateMemory(mm, 30, 1);
-    allocated_block = allocateMemory(mm, 30, 1);
+    allocated_block = allocateMemory(mm2, 10, 1);
+    allocated_block = allocateMemory(mm2, 20, 1);
+    allocated_block = allocateMemory(mm2, 30, 1);
+    allocated_block = allocateMemory(mm2, 30, 1);
     
     //FL size 10 address 0, BL s10 a0, s20 a10, s30 a30, s30 a60
     dumpMemoryLists(mm2);
@@ -58,11 +58,11 @@ int main() {
 
     int address = allocateMemory(mm2, 10, 1);
     //should be 10 : 90
-    printf("%i", address);
+    printf("%i\n", address);
 
     address = allocateMemory(mm2, 30, 1);
     //should be 30 : 10
-    printf("%i", address);
+    printf("%i\n", address);
     dumpMemoryLists(mm2);
     return 0;
 }
