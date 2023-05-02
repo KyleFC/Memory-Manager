@@ -106,7 +106,7 @@ void printList(linkedlist *list)
     printf("%d items: ", list->count);
     while (curr != NULL)
     {
-        printf("ad=%d:sz=%d ", curr->address, curr->data);
+        printf("size:%d address:%d ", curr->data, curr->address);
         curr = curr->next;
     }
     printf("\n");
@@ -194,6 +194,7 @@ node *findBlock(linkedlist *list, int n)
     {
         if (curr->address == n)
         {
+            //printf("\n\n%i\n\n", curr->next->address);
             return curr;
         }
         curr = curr->next;
@@ -261,7 +262,7 @@ node* unlinkNode(linkedlist *list, int n)
 {
     linkedlist *temp = list;
     node *tempnode = findBlock(temp, n);
-
+    
     if (tempnode == temp->head)
     {
         temp->head = tempnode->next;
@@ -281,12 +282,12 @@ node* unlinkNode(linkedlist *list, int n)
         tempnode->next->prev = tempnode->prev;
     }
 
-
     if (tempnode->prev != NULL || tempnode->next != NULL)
     {
         temp->count--;
     }
 
+    
     tempnode->prev = NULL;
     tempnode->next = NULL;
 
@@ -359,7 +360,7 @@ void selectionSortBlocks(linkedlist *list)
 {
     
     node *curr = list->head;
-    while (curr->next != NULL)
+    while (curr != NULL)
     {
         //go through all values to find the minimum
         node *min = curr;

@@ -18,4 +18,5 @@ void dumpMemoryLists(memory_manager*);
 void destroyMemoryManager(memory_manager*);
 void freeMemory(memory_manager*, int);
 void coalesceList(linkedlist *);
+void printAddresses(linkedlist *);
 #endif

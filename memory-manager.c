@@ -19,9 +19,9 @@ memory_manager *createMemoryManager(int size) {
     BL->tail = NULL;
     BL->count = 0;
 
-    addToStart(LL, size);
-    addToStart(FL, size);
-    
+    addToEnd(LL, size, 0);
+    addToEnd(FL, size, 0);
+    //printf("TAIL = %i\n", FL->tail->address);
     mem_manager->memory_map = LL;
     mem_manager->free_list = FL;
     mem_manager->busy_list = BL;
@@ -60,7 +60,7 @@ int allocateMemory(memory_manager *mm, int size, int mode) {
         }
     }
     else {
-        node *curr = findBestBlock(FL, size);
+        curr = findBestBlock(FL, size);
     }
 
     if (curr == NULL) {
@@ -75,9 +75,12 @@ int allocateMemory(memory_manager *mm, int size, int mode) {
         node *new_node = malloc(sizeof(node));
         new_node->data = curr->data - size;
         new_node->address = curr->address + size;
-        new_node->next = NULL;
+        new_node->next = curr->next;
         new_node->prev = curr;
         curr->data = size;
+        if (curr->next != NULL) { // Check if the next node exists before updating its prev pointer
+            curr->next->prev = new_node;
+        }
         curr->next = new_node;
     }
     // Remove the allocated block from the free list
@@ -85,13 +88,16 @@ int allocateMemory(memory_manager *mm, int size, int mode) {
         FL->head = curr->next;
     } else {
         prev->next = curr->next;
+        if (curr->next != NULL) { // Check if the next node exists before updating its prev pointer
+            curr->next->prev = prev;
+        }
     }
 
     // Add the allocated block to the busy list
     int address = curr->address;
     linkedlist *BL = mm->busy_list;
     addToEnd(BL, size, address);
-
+    //selectionSortBlocks(BL);
     // Return the address
     return address;
 }
@@ -100,34 +106,54 @@ void freeMemory(memory_manager *mm, int address) {
     linkedlist *BL = mm->busy_list;
     linkedlist *FL = mm->free_list;
     node *freed_node = unlinkNode(BL, address);
-    //printf("%i", freed_node->address);
+
+    printf("\n");
+    printAddresses(FL);
     addToEnd(FL, freed_node->data, freed_node->address);
+    
+    printAddresses(FL);
     selectionSortBlocks(FL);
+    printf("After sorting:\n");
+    printAddresses(FL);
     coalesceList(FL);
+    printf("After coalescing:\n");
+    printAddresses(FL);
 }
 
 void coalesceList(linkedlist *LL) {
     node *curr = LL->head;
-    while (curr && curr->next) {
+    while (curr != NULL && curr->next != NULL) {
         // Find end of current block
         int curr_end = curr->address + curr->data;
         node *next = curr->next;
+        int size = next->data;
         // Find start of next block
         int next_start = next->address;
-        //printf("%d, %d", curr_end, next_start);
         if (curr_end == next_start) {
             // Merge the two blocks into a single block
-            //printf("Found match");
-            curr->data += next->data;
-            unlinkNode(LL, next->address);
-        } 
-        else if (LL->tail == curr) {
-            curr->next = NULL;
-        }
-        else {
-            curr = curr->next;
+            curr->data += size;
+            node *temp_next = next->next;
+            curr->next = temp_next;
+            if (temp_next != NULL) {
+                temp_next->prev = curr;
+            } else {
+                LL->tail = curr; // Update tail after coalescing
+            }
+            free(next);
+        } else {
+            curr = curr->next;  // move to the next node
         }
     }
+}
+
+void printAddresses(linkedlist *LL) {
+    node *curr = LL->head;
+    printf("Addresses: ");
+    while (curr != NULL) {
+        printf("%i ", curr->address);
+        curr = curr->next;
+    }
+    printf("\n");
 }
 
 void dumpMemoryLists(memory_manager *mm) {
@@ -137,6 +163,7 @@ void dumpMemoryLists(memory_manager *mm) {
     printList(bl);
     printf("Free List ");
     printList(fl);
+    printf("\n");
 }
 
 void destroyMemoryManager(memory_manager *mm) {
