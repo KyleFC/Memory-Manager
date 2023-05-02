@@ -2,6 +2,13 @@
 #include <assert.h>
 
 int main() {
+
+    //Some linked list testing
+    //linkedlist *ll = (*linkedlist) malloc(sizeof(linkedlist));
+
+
+
+
     // Test createMemoryManager function
     memory_manager *mm = createMemoryManager(1000);
     //should only be the initial node with a value of 100 for 100 free space
@@ -49,21 +56,24 @@ int main() {
     allocated_block = allocateMemory(mm2, 20, 1);
     allocated_block = allocateMemory(mm2, 30, 1);
     allocated_block = allocateMemory(mm2, 30, 1);
+    printAddresses(mm2->free_list);
+    printAddresses(mm2->busy_list);
     
-    //FL size 10 address 0, BL s10 a0, s20 a10, s30 a30, s30 a60
+    //BL size 10 address 0, BL s10 a0, s20 a10, s30 a30, s30 a60
     dumpMemoryLists(mm2);
+    //printf("tail = %i", mm2->free_list->tail->address);
     freeMemory(mm2, 10);
     dumpMemoryLists(mm2);
     freeMemory(mm2, 30);
+    //printf("tail = %i", mm2->free_list->tail->address);
+    //FL size 10 address 90, size 50 address 10
+    printAddresses(mm2->free_list);
+    printAddresses(mm2->busy_list);
+    printf("\n");
     dumpMemoryLists(mm2);
 
     int address = allocateMemory(mm2, 10, 1);
-    //should be 10 : 90
-    printf("%i\n", address);
-
     address = allocateMemory(mm2, 30, 1);
-    //should be 30 : 10
-    printf("%i\n", address);
     dumpMemoryLists(mm2);
     return 0;
 }
