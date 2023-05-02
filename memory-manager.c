@@ -72,23 +72,27 @@ int allocateMemory(memory_manager *mm, int size, int mode) {
     if (curr->data >= size) {
         // Split the node if it has more space than needed
         // new node is the second half
+
+        insertAfter(FL, curr, curr->data - size, curr->address + size);
+        /*
         node *new_node = malloc(sizeof(node));
         new_node->data = curr->data - size;
         new_node->address = curr->address + size;
-        new_node->next = NULL;
+        new_node->next = curr->next;
+        if (new_node->next != NULL) {
+            new_node->next->prev = new_node;
+        }
         new_node->prev = curr;
-        curr->data = size;
         curr->next = new_node;
+        */
+        curr->data = size;
     }
     // Remove the allocated block from the free list
-    if (prev == NULL) {
-        FL->head = curr->next;
-    } else {
-        prev->next = curr->next;
-    }
+    int address = curr->address;
+    unlinkNode(FL, curr->address);
+
 
     // Add the allocated block to the busy list
-    int address = curr->address;
     linkedlist *BL = mm->busy_list;
     addToEnd(BL, size, address);
 
@@ -100,8 +104,9 @@ void freeMemory(memory_manager *mm, int address) {
     linkedlist *BL = mm->busy_list;
     linkedlist *FL = mm->free_list;
     node *freed_node = unlinkNode(BL, address);
-    //printf("%i", freed_node->address);
+    printList(FL);
     addToEnd(FL, freed_node->data, freed_node->address);
+    printList(FL);
     selectionSortBlocks(FL);
     coalesceList(FL);
 }
@@ -120,9 +125,6 @@ void coalesceList(linkedlist *LL) {
             //printf("Found match");
             curr->data += next->data;
             unlinkNode(LL, next->address);
-        } 
-        else if (LL->tail == curr) {
-            curr->next = NULL;
         }
         else {
             curr = curr->next;

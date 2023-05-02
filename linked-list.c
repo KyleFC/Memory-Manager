@@ -51,11 +51,6 @@ void addToEnd(linkedlist *list, int data, int address)
     }
 
     node* end = temp->tail;
-    while (end->next != NULL)
-    //loop through the list until we reach the end
-    {
-        end = end->next;
-    }
     end->next = new;
     //set the 2nd to last node to have the new node as next
     temp->tail = new;
@@ -228,7 +223,7 @@ void insertBefore(linkedlist *list, node **target, int data)
 
 
 
-void insertAfter(linkedlist *list, node **target, int data)
+void insertAfter(linkedlist *list, node *target, int data, int address)
 /*
  * @brief: This inserts after index n
  * @param: data - information to be stored in the node
@@ -236,16 +231,21 @@ void insertAfter(linkedlist *list, node **target, int data)
  * @return: None
  */
 {
-    list->count -= 1;
-    node *curr = *target;
+    list->count += 1;
+    node *curr = target;
     node *new = (node*) malloc(sizeof(node));
     new->data = data;
+    new->address = address;
     new->prev = curr;
     new->next = curr->next;
 
     if (curr->next != NULL)
     {
         curr->next->prev = new;
+    }
+    else
+    {
+        list->tail = new;
     }
 
     curr->next = new;
@@ -259,38 +259,49 @@ node* unlinkNode(linkedlist *list, int n)
  * @return: the new linked list
  */
 {
-    linkedlist *temp = list;
-    node *tempnode = findBlock(temp, n);
+    //linkedlist* temp = list;
+    node *tempnode = findBlock(list, n);
 
-    if (tempnode == temp->head)
+    if (tempnode == list->head)
     {
-        temp->head = tempnode->next;
+        list->head = tempnode->next;
     }
-    if (tempnode == temp->tail)
+    if (tempnode == list->tail)
     {
-        temp->tail = tempnode->prev;
+        list->tail = tempnode->prev;
     }
 
-    if (tempnode->prev != NULL)
+    if (tempnode->prev != NULL && tempnode->next != NULL)
     {
         tempnode->prev->next = tempnode->next;
-    }
-
-    if (tempnode->next != NULL)
-    {
         tempnode->next->prev = tempnode->prev;
     }
-
+    else if (tempnode->next != NULL)
+    {
+        tempnode->next->prev = NULL;
+        list->head = tempnode->next; // redundant
+    }
+    else if (tempnode->prev != NULL)
+    {
+        tempnode->prev->next = NULL;
+        list->tail = tempnode->prev; // redundant
+    }
 
     if (tempnode->prev != NULL || tempnode->next != NULL)
     {
-        temp->count--;
+        list->count--;
     }
 
-    tempnode->prev = NULL;
-    tempnode->next = NULL;
+    //tempnode->prev = NULL;
+    //tempnode->next = NULL;
 
-    return tempnode;
+    node *new = (node*) malloc(sizeof(node));
+    new->address = tempnode->address;
+    new->data = tempnode->data;
+
+    free(tempnode);
+
+    return new;
 }
 
 

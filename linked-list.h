@@ -27,7 +27,7 @@ node *removeFirst(linkedlist*);
 node *findNode(linkedlist*, int);
 node *findBlock(linkedlist*, int);
 void insertBefore(linkedlist*, node**, int);
-void insertAfter(linkedlist*, node**, int);
+void insertAfter(linkedlist*, node*, int, int);
 void removeNode(linkedlist*, node**);
 node *unlinkNode(linkedlist*, int);
 int count(linkedlist*);

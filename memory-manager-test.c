@@ -53,6 +53,7 @@ int main() {
     //FL size 10 address 0, BL s10 a0, s20 a10, s30 a30, s30 a60
     dumpMemoryLists(mm2);
     freeMemory(mm2, 10);
+    dumpMemoryLists(mm2);
     freeMemory(mm2, 30);
     dumpMemoryLists(mm2);
 
