@@ -56,10 +56,11 @@ app_version: 1.7.2
 37         }
 38     
 39         int fit;
-40         if (strcmp(fit_mode, "first-fit")) {
+40         if (fit_mode[strcspn("first-fit", "\n")] != 0) {
 41             fit = 0;
-42         }
-43         else if (strcmp(fit_mode, "best-fit")) {
+42             printf("Loaded in first-fit mode\n");
+43         }
+44         else if (fit_mode[strcspn("best-fit", "\n")] != 0) {
 ```
 
 <br/>
@@ -80,23 +81,23 @@ printMemoryMap() prints out a memory map for a given memory manager. It takes a 
 <!-- collapsed -->
 
 ```c
-82     void printUsage() {
-83         printf("Usage: [config file path]\n");
-84     }
-85     
-86     void printMemoryMap(memory_manager *mm) {
-87         dumpMemoryLists(mm);
-88         return;
-89     
-90         printf("Memory Map:\n");
-91         linkedlist *map = mm->memory_map;
-92         node *curr = map->head;
-93     
-94         while (curr != NULL) {
-95             printf("%p - %p : %d bytes\n", curr, (void*)((char*)curr + curr->data - 1), curr->data);
-96             curr = curr->next;
-97         }
-98     }
+85     void printUsage() {
+86         printf("Usage: [config file path]\n");
+87     }
+88     
+89     void printMemoryMap(memory_manager *mm) {
+90         dumpMemoryLists(mm);
+91         return;
+92     
+93         printf("Memory Map:\n");
+94         linkedlist *map = mm->memory_map;
+95         node *curr = map->head;
+96     
+97         while (curr != NULL) {
+98             printf("%p - %p : %d bytes\n", curr, (void*)((char*)curr + curr->data - 1), curr->data);
+99             curr = curr->next;
+100        }
+101    }
 ```
 
 <br/>
@@ -111,53 +112,53 @@ parseCommand() reads and interprets user input for a memory manager command-line
 <!-- collapsed -->
 
 ```c
-100    void parseCommand(char *command, int fit, memory_manager *mm) {
-101        char *token = strtok(command, " ");
-102    
-103        if (token == NULL) {
-104            return;
-105        }
-106    
-107        if (strcmp(token, "allocate") == 0) {
-108            token = strtok(NULL, " ");
-109            if (token == NULL) {
-110                printf("allocate command requires size argument\n");
-111                return;
-112            }
-113    
-114            int size = atoi(token);
-115            if (size <= 0) {
-116                printf("Invalid size argument\n");
-117                return;
-118            }
-119    
-120            int address = allocateMemory(mm, size, fit);
-121            if (address == -1) {
-122                printf("Failed to allocate %d bytes\n", size);
-123            } else {
-124                //%p for hex so it looks like real memory addresses.
-125                printf("Allocated %d bytes at address %i\n", size, address);
-126            }
-127        } else if (strcmp(token, "free") == 0) {
-128            token = strtok(NULL, " ");
-129            if (token == NULL) {
-130                printf("free command requires address argument\n");
-131                return;
-132            }
-133    
-134            int address = atoi(token);
-135            if (address <= 0) {
-136                printf("Invalid address argument\n");
-137            }
-138    
-139            freeMemory(mm, address);
-140            printf("Freed memory at address %d\n", address);
-141        } else if (strcmp(token, "list") == 0 || strcmp(token, "view") == 0) {
-142            printMemoryMap(mm);
-143        } else {
-144            printf("Unknown command: %s\n", token);
-145        }
-146    }
+103    void parseCommand(char *command, int fit, memory_manager *mm) {
+104        char *token = strtok(command, " ");
+105    
+106        if (token == NULL) {
+107            return;
+108        }
+109    
+110        if (strcmp(token, "allocate") == 0) {
+111            token = strtok(NULL, " ");
+112            if (token == NULL) {
+113                printf("allocate command requires size argument\n");
+114                return;
+115            }
+116    
+117            int size = atoi(token);
+118            if (size <= 0) {
+119                printf("Invalid size argument\n");
+120                return;
+121            }
+122    
+123            int address = allocateMemory(mm, size, fit);
+124            if (address == -1) {
+125                printf("Failed to allocate %d bytes\n", size);
+126            } else {
+127                //%p for hex so it looks like real memory addresses.
+128                printf("Allocated %d bytes at address %i\n", size, address);
+129            }
+130        } else if (strcmp(token, "free") == 0) {
+131            token = strtok(NULL, " ");
+132            if (token == NULL) {
+133                printf("free command requires address argument\n");
+134                return;
+135            }
+136    
+137            int address = atoi(token);
+138            if (address < 0) {
+139                printf("Invalid address argument\n");
+140            }
+141    
+142            freeMemory(mm, address);
+143            printf("Freed memory at address %d\n", address);
+144        } else if (strcmp(token, "list") == 0 || strcmp(token, "view") == 0) {
+145            printMemoryMap(mm);
+146        } else {
+147            printf("Unknown command: %s\n", token);
+148        }
+149    }
 ```
 
 <br/>
