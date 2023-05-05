@@ -37,11 +37,13 @@ int main(int argc, char *argv[]) {
     }
 
     int fit;
-    if (strcmp(fit_mode, "first-fit")) {
+    if (fit_mode[strcspn("first-fit", "\n")] != 0) {
         fit = 0;
+        printf("Loaded in first-fit mode\n");
     }
-    else if (strcmp(fit_mode, "best-fit")) {
+    else if (fit_mode[strcspn("best-fit", "\n")] != 0) {
         fit = 1;
+        printf("Loaded in best-fit mode\n");
     }
     else {
         printf("Invalid fit mode\n");
@@ -53,6 +55,7 @@ int main(int argc, char *argv[]) {
         printf("Invalid size argument\n");
         return 1;
     }
+    printf("Created Memory Manager: %d bytes\n", size);
 
     memory_manager *mm = createMemoryManager(size);
     char command[BUFFER_SIZE];
@@ -132,7 +135,7 @@ void parseCommand(char *command, int fit, memory_manager *mm) {
         }
 
         int address = atoi(token);
-        if (address <= 0) {
+        if (address < 0) {
             printf("Invalid address argument\n");
         }
 

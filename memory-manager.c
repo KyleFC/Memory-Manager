@@ -36,13 +36,14 @@ node  *findBestBlock(linkedlist *LL, int size) {
     node *prev = NULL;
 
     while (curr != NULL) {
-        if (curr->data >= size) {
+        if (curr->data >= size && curr->data < min) {
             best_fit = curr;
-            min = curr->data - size;
+            min = curr->data;
         }
         prev = curr;
         curr = curr->next;
     } 
+
     return best_fit;
 }
 
@@ -74,17 +75,7 @@ int allocateMemory(memory_manager *mm, int size, int mode) {
         // new node is the second half
 
         insertAfter(FL, curr, curr->data - size, curr->address + size);
-        /*
-        node *new_node = malloc(sizeof(node));
-        new_node->data = curr->data - size;
-        new_node->address = curr->address + size;
-        new_node->next = curr->next;
-        if (new_node->next != NULL) {
-            new_node->next->prev = new_node;
-        }
-        new_node->prev = curr;
-        curr->next = new_node;
-        */
+
         curr->data = size;
     }
     // Remove the allocated block from the free list
@@ -95,7 +86,7 @@ int allocateMemory(memory_manager *mm, int size, int mode) {
     // Add the allocated block to the busy list
     linkedlist *BL = mm->busy_list;
     addToEnd(BL, size, address);
-    //selectionSortBlocks(BL);
+
     // Return the address
     return address;
 }
@@ -120,7 +111,7 @@ void coalesceList(linkedlist *LL) {
         int next_start = next->address;
         if (curr_end == next_start) {
             // Merge the two blocks into a single block
-            //printf("Found match");
+
             curr->data += next->data;
             unlinkNode(LL, next->address);
         }

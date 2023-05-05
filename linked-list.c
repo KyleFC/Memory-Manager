@@ -183,7 +183,6 @@ node *findBlock(linkedlist *list, int n)
     {
         if (curr->address == n)
         {
-            //printf("\n\n%i\n\n", curr->next->address);
             return curr;
         }
         curr = curr->next;
@@ -273,12 +272,12 @@ node* unlinkNode(linkedlist *list, int n)
     else if (tempnode->next != NULL)
     {
         tempnode->next->prev = NULL;
-        list->head = tempnode->next; // redundant
+        list->head = tempnode->next;
     }
     else if (tempnode->prev != NULL)
     {
         tempnode->prev->next = NULL;
-        list->tail = tempnode->prev; // redundant
+        list->tail = tempnode->prev;
     }
 
     list->count--;
