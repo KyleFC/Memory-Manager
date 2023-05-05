@@ -122,9 +122,6 @@ node* removeLast(linkedlist *list)
         return NULL;
     }
 
-    temp->tail = curr->prev;
-    curr->prev = NULL;
-    temp->count -= 1;
     unlinkNode(list, curr->data);
 
     return curr;
@@ -145,9 +142,6 @@ node *removeFirst(linkedlist *list)
         return NULL;
     }
 
-    temp->head = curr->next;
-    curr->next = NULL;
-    temp->count -= 1;
     unlinkNode(list, curr->data);
 
     return curr;
@@ -260,7 +254,6 @@ node* unlinkNode(linkedlist *list, int n)
  * @return: the new linked list
  */
 {
-    //linkedlist* temp = list;
     node *tempnode = findBlock(list, n);
 
     if (tempnode == list->head)
@@ -289,9 +282,6 @@ node* unlinkNode(linkedlist *list, int n)
     }
 
     list->count--;
-
-    //tempnode->prev = NULL;
-    //tempnode->next = NULL;
 
     node *new = (node*) malloc(sizeof(node));
     new->address = tempnode->address;
