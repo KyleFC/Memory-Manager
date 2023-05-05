@@ -21,7 +21,7 @@ memory_manager *createMemoryManager(int size) {
 
     addToEnd(LL, size, 0);
     addToEnd(FL, size, 0);
-    //printf("TAIL = %i\n", FL->tail->address);
+
     mem_manager->memory_map = LL;
     mem_manager->free_list = FL;
     mem_manager->busy_list = BL;
@@ -69,7 +69,7 @@ int allocateMemory(memory_manager *mm, int size, int mode) {
     }
 
     // Found a suitable block in free list
-    if (curr->data >= size) {
+    if (curr->data > size) {
         // Split the node if it has more space than needed
         // new node is the second half
 
@@ -104,15 +104,9 @@ void freeMemory(memory_manager *mm, int address) {
     linkedlist *BL = mm->busy_list;
     linkedlist *FL = mm->free_list;
     node *freed_node = unlinkNode(BL, address);
-    printList(FL);
     addToEnd(FL, freed_node->data, freed_node->address);
-    printList(FL);
     selectionSortBlocks(FL);
-    printf("After sorting:\n");
-    printAddresses(FL);
     coalesceList(FL);
-    printf("After coalescing:\n");
-    printAddresses(FL);
 }
 
 void coalesceList(linkedlist *LL) {
@@ -155,6 +149,8 @@ void dumpMemoryLists(memory_manager *mm) {
     printList(fl);
     printf("\n");
 }
+
+
 
 void destroyMemoryManager(memory_manager *mm) {
     linkedlist *map  = mm->memory_map;

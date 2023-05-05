@@ -101,7 +101,7 @@ void printList(linkedlist *list)
     printf("%d items: ", list->count);
     while (curr != NULL)
     {
-        printf("size:%d address:%d ", curr->data, curr->address);
+        printf("ad=%d:sz=%d ", curr->address, curr->data);
         curr = curr->next;
     }
     printf("\n");
@@ -288,10 +288,7 @@ node* unlinkNode(linkedlist *list, int n)
         list->tail = tempnode->prev; // redundant
     }
 
-    if (tempnode->prev != NULL || tempnode->next != NULL)
-    {
-        list->count--;
-    }
+    list->count--;
 
     //tempnode->prev = NULL;
     //tempnode->next = NULL;
@@ -319,6 +316,7 @@ void destroyList(linkedlist *list) {
         free(temp);
     }
     list->head = NULL;
+    list->tail = NULL;
     list->count = 0;
 }
 
